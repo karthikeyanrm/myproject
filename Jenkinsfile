@@ -6,7 +6,7 @@ pipeline {
     }
 
     stages {
-        stage('Conditional Execution') {
+        stage('Build and Deploy') {
             steps {
                 script {
                     def currentBranch = env.GIT_BRANCH
@@ -26,7 +26,7 @@ pipeline {
                             sh "echo \$MY_SECURE_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin"
                         }
 
-                        // Add the additional Docker commands for 'dev'
+                        // Build and Deploy Docker commands for 'dev'
                         sh './build.sh'
                         sh 'docker tag reactjs-demo:latest karthikeyanrm/devrepo:latest'
                         sh 'docker push karthikeyanrm/devrepo:latest'
@@ -48,7 +48,7 @@ pipeline {
                             sh "echo \$MY_SECURE_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin"
                         }
 
-                        // Add the additional Docker commands for 'master'
+                        // Build and Deploy Docker commands for 'master'
                         sh './build.sh'
                         sh 'docker tag reactjs-demo:latest karthikeyanrm/prodrepo:01'
                         sh 'docker push karthikeyanrm/prodrepo:01'
@@ -74,7 +74,7 @@ pipeline {
 Docker Container Info:
 ${sh(script: 'docker ps --format "{{.Names}}\\t{{.Ports}}" | awk -F "\\t" -v public_ip=$(curl -s ifconfig.me) \'{print "Container:", $1, "Public IP:", public_ip, "Port Mapping:", $2}\'', returnStdout: true)}
 """,
-                attachLog: true // Attach build log for success email
+                attachLog: true // This post success script will trigger the E-mail and Attach build log for success email
             }
         }
         failure {
@@ -82,7 +82,7 @@ ${sh(script: 'docker ps --format "{{.Names}}\\t{{.Ports}}" | awk -F "\\t" -v pub
                 emailext to: 'karthisk217@gmail.com',
                 subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS',
                 body: "The build #${BUILD_NUMBER} has failed. You can view the build log [here](${BUILD_URL}console)".toString(),
-                attachLog: true // Attach build log for failure email
+                attachLog: true // This post failure script will trigger the E-mail and Attach build log for failure email
             }
         }
     
