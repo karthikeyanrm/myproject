@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIAL_ID = 'kndocker' // Updated credential ID
+        DOCKER_HUB_CREDENTIAL_ID = 'kndocker' // dockerhub credential ID
     }
 
     stages {
